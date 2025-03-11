@@ -19,21 +19,79 @@ class RuffierProcessor:
         self.name = name
 
     def set_age(self,age):
-        self.age = age
+        self.age = int(age)
 
     def set_hb1(self,hb1):
-        self.heartbeat1 = hb1
+        self.heartbeat1 = int(hb1)
 
     def set_hb2(self,hb2):
-        self.heartbeat2 = hb2
+        self.heartbeat2 = int(hb2)
 
     def set_hb3(self,hb3):
-        self.heartbeat3 = hb3
+        self.heartbeat3 = int(hb3)
 
     def do_result(self):
         result = (4*(self.heartbeat1+self.heartbeat2+self.heartbeat3)-200)/10
-        return str(result)
+        if self.age >= 15:
+            if result >= 15:
+                text = 0
+            elif result >= 11 and result <= 14:
+                text = 1
+            elif result >= 6 and result <= 10:
+                text = 2
+            elif result >= 1 and result <= 5:
+                text = 3
+            else:
+                text = 4
+        elif self.age == 13 or self.age == 14:
+            if result >= 16:
+                text = 0
+            elif result >= 12 and result <= 15:
+                text = 1
+            elif result >= 7 and result <= 11:
+                text = 2
+            elif result >= 2 and result <= 6:
+                text = 3
+            else:
+                text = 4
+        elif self.age == 11 or self.age == 12:
+            if result >= 18:
+                text = 0
+            elif result >= 14 and result <= 17:
+                text = 1
+            elif result >= 9 and result <= 13:
+                text = 2
+            elif result >= 3 and result <= 8:
+                text = 3
+            else:
+                text = 4
+        elif self.age == 9 or self.age == 10:
+            if result >= 19:
+                text = 0
+            elif result >= 15 and result <= 18:
+                text = 1
+            elif result >= 10 and result <= 14:
+                text = 2
+            elif result >= 5 and result <= 9:
+                text = 3
+            else:
+                text = 4
+        elif self.age == 7 or self.age == 8:
+            if result >= 21:
+                text = 0
+            elif result >= 17 and result <= 21:
+                text = 1
+            elif result >= 12 and result <= 16:
+                text = 2
+            elif result >= 6 and result <= 11:
+                text = 3
+            else:
+                text = 4
+        else:
+            text = 5
+        return text
 client = RuffierProcessor()
+result = ['Unsatisfactory','Weak','Satisfactory','Good','Excellent',"For that age, we can't calculate the result"]
 
 class ScrButton(Button):
     def __init__(self, screen, goal, direction='left', **kwargs):
@@ -51,6 +109,7 @@ class Scr1Button(ScrButton):
         super().__init__(screen,goal,direction,**kwargs)
 
     def on_press(self):
+        print('sdasdada')
         client.set_name(self.screen.text_in_name.text)
         client.set_age(self.screen.text_in_age.text)
         self.screen.manager.transition.direction = self.direction
@@ -61,7 +120,7 @@ class Scr2Button(ScrButton):
         super().__init__(screen, goal, direction, **kwargs)
 
     def on_press(self):
-        client.set_hb1(self.screen.text_in)
+        client.set_hb1(self.screen.text_in.text)
         self.screen.manager.transition.direction = self.direction
         self.screen.manager.current = self.goal
 
@@ -70,8 +129,9 @@ class Scr3Button(ScrButton):
         super().__init__(screen, goal, direction, **kwargs)
 
     def on_press(self):
-        client.set_hb2(self.screen.text_in_1)
-        client.set_hb3(self.screen.text_in_2)
+        client.set_hb2(self.screen.text_in_1.text)
+        client.set_hb3(self.screen.text_in_2.text)
+        screen4.replace(result[client.do_result()])
         self.screen.manager.transition.direction = self.direction
         self.screen.manager.current = self.goal
 
@@ -136,23 +196,28 @@ class SubScreen3(Screen):
     def __init__(self, name):
         super().__init__(name=name)
         layout_main = BoxLayout(orientation='vertical', padding=20, spacing=70)
-        label = Label(
-            text='Your result:'+client.do_result())
+        self.label = Label(
+            text='Your result:')
         label1 = Label(text = 'Thank you for taking the test!\nIf you click the button, you can restart the test.')
         btn = ScrButton(self, 'main', text='Назад')
-        layout_main.add_widget(label)
+        layout_main.add_widget(self.label)
         layout_main.add_widget(label1)
         layout_main.add_widget(btn)
         self.add_widget(layout_main)
 
+    def replace(self, main_result):
+        self.label = Label(text = 'Your result:'+ main_result )
 
+screen4 = None
 class MyApp(App):
     def build(self):
+        global screen4
         sm = ScreenManager()
         sm.add_widget(MainScr())
         scr1 = SubScreen1('scr1', 'scr2')
         scr2 = SubScreen2('scr2', 'scr4')
         scr4 = SubScreen3('scr4')
+        screen4 = scr4
         sm.add_widget(scr1)
         sm.add_widget(scr2)
         sm.add_widget(scr4)
