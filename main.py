@@ -89,7 +89,7 @@ class RuffierProcessor:
                 text = 4
         else:
             text = 5
-        return text
+        return text, result
 client = RuffierProcessor()
 result = ['Unsatisfactory','Weak','Satisfactory','Good','Excellent',"For that age, we can't calculate the result"]
 
@@ -131,7 +131,8 @@ class Scr3Button(ScrButton):
     def on_press(self):
         client.set_hb2(self.screen.text_in_1.text)
         client.set_hb3(self.screen.text_in_2.text)
-        screen4.replace(result[client.do_result()])
+        index, value = client.do_result()
+        screen4.replace(result[index], str(value))
         self.screen.manager.transition.direction = self.direction
         self.screen.manager.current = self.goal
 
@@ -195,18 +196,18 @@ class SubScreen2(Screen):
 class SubScreen3(Screen):
     def __init__(self, name):
         super().__init__(name=name)
-        layout_main = BoxLayout(orientation='vertical', padding=20, spacing=70)
+        self.layout_main = BoxLayout(orientation='vertical', padding=20, spacing=70)
         self.label = Label(
             text='Your result:')
-        label1 = Label(text = 'Thank you for taking the test!\nIf you click the button, you can restart the test.')
-        btn = ScrButton(self, 'main', text='Назад')
-        layout_main.add_widget(self.label)
-        layout_main.add_widget(label1)
-        layout_main.add_widget(btn)
-        self.add_widget(layout_main)
+        self.label1 = Label(text = 'Thank you for taking the test!\nIf you click the button, you can restart the test.')
+        self.btn = ScrButton(self, 'main', text='Назад')
+        self.layout_main.add_widget(self.label)
+        self.layout_main.add_widget(self.label1)
+        self.layout_main.add_widget(self.btn)
+        self.add_widget(self.layout_main)
 
-    def replace(self, main_result):
-        self.label = Label(text = 'Your result:'+ main_result )
+    def replace(self, text, value):
+        self.label.text = 'Your result:'+ value+'\n'+text
 
 screen4 = None
 class MyApp(App):
